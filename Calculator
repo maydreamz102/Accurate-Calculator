@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FNTD Trade Calculator</title>
+<style>
+body{background:#1a1a1a;color:white;font-family:Arial;margin:0;padding:15px}
+.box{border:2px solid black;background:#242424;padding:10px;margin-bottom:12px}
+select,input,button{background:#1f1f1f;color:white;border:2px solid black;padding:6px}
+button{cursor:pointer;font-weight:bold}
+h2{margin:0 0 10px 0}
+.item{border:2px solid black;padding:6px;margin-top:6px;background:#1f1f1f}
+</style>
+</head>
+<body>
+
+<h2>FNTD Trade Calculator (Souls)</h2>
+
+<div class="box">
+Your Total: <b id="yourTotal">0</b> Souls |
+Their Total: <b id="theirTotal">0</b> Souls |
+Difference: <b id="diff">0</b>
+</div>
+
+<div class="box">
+<h3>Your Trade</h3>
+<select id="yourTower"></select>
+<input id="yourQty" type="number" value="1" min="1">
+<button onclick="addItem('your')">Add</button>
+<div id="yourList"></div>
+</div>
+
+<div class="box">
+<h3>Their Trade</h3>
+<select id="theirTower"></select>
+<input id="theirQty" type="number" value="1" min="1">
+<button onclick="addItem('their')">Add</button>
+<div id="theirList"></div>
+</div>
+
+<script>
+const towers = [
+{ name:"Freddy", value:1 },
+{ name:"Chica", value:2 },
+{ name:"Foxy", value:5 },
+{ name:"Bonnie", value:20 },
+{ name:"Golden Freddy", value:15 },
+{ name:"Endo 01", value:35 },
+{ name:"Toy Freddy", value:5 },
+{ name:"Toy Bonnie", value:13 },
+{ name:"Toy Chica", value:20 },
+{ name:"Puppet", value:5 },
+{ name:"Endo 02", value:250 },
+{ name:"Plane Boy", value:400 },
+{ name:"Rockin Bonnie", value:75 },
+{ name:"Withered Chica", value:15 },
+{ name:"Withered Foxy", value:35 },
+{ name:"Withered Freddy", value:75 },
+{ name:"Withered Bonnie", value:500 },
+{ name:"Pirate Withered Foxy", value:55 },
+{ name:"Withered Golden Freddy", value:250 }
+];
+
+const yourTrade=[];
+const theirTrade=[];
+
+const yourSelect=document.getElementById("yourTower");
+const theirSelect=document.getElementById("theirTower");
+
+function loadTowers(){
+  towers.forEach(t=>{
+    let o1=document.createElement("option");
+    o1.textContent=`${t.name} (${t.value})`;
+    o1.value=t.name;
+    yourSelect.appendChild(o1);
+
+    let o2=o1.cloneNode(true);
+    theirSelect.appendChild(o2);
+  });
+}
+
+function getValue(name){
+  return towers.find(t=>t.name===name).value;
+}
+
+function addItem(side){
+  let tower = side==="your"?yourSelect.value:theirSelect.value;
+  let qty = Number(side==="your"?yourQty.value:theirQty.value);
+  let obj={tower,qty};
+  if(side==="your") yourTrade.push(obj);
+  else theirTrade.push(obj);
+  render();
+}
+
+function render(){
+  yourList.innerHTML="";
+  theirList.innerHTML="";
+  let yTotal=0,tTotal=0;
+
+  yourTrade.forEach((i,idx)=>{
+    let val=getValue(i.tower)*i.qty;
+    yTotal+=val;
+    yourList.innerHTML+=`<div class="item">${i.qty}x ${i.tower} = ${val} <button onclick="del('your',${idx})">X</button></div>`;
+  });
+
+  theirTrade.forEach((i,idx)=>{
+    let val=getValue(i.tower)*i.qty;
+    tTotal+=val;
+    theirList.innerHTML+=`<div class="item">${i.qty}x ${i.tower} = ${val} <button onclick="del('their',${idx})">X</button></div>`;
+  });
+
+  yourTotal.textContent=yTotal;
+  theirTotal.textContent=tTotal;
+  diff.textContent=yTotal-tTotal;
+}
+
+function del(side,i){
+  if(side==="your") yourTrade.splice(i,1);
+  else theirTrade.splice(i,1);
+  render();
+}
+
+loadTowers();
+</script>
+
+</body>
+</html>
